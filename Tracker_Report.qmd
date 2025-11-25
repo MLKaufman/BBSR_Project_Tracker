@@ -40,7 +40,8 @@ execute:
   fig.align: "center"
 
 params:
-  start_date: "2025-09-01"
+  start_date: "2025-11-17"
+  end_date: "2025-11-23"
 
 ---
 
@@ -73,7 +74,11 @@ toggl_data <- read.csv(toggl_file, stringsAsFactors = FALSE)
 ```{r}
 # filter for date range, July 2025 to present
 start_date <- as.Date(params$start_date)
-end_date <- Sys.Date()
+end_date <- if (is.null(params$end_date) || params$end_date == "") {
+  Sys.Date()
+} else {
+  as.Date(params$end_date)
+}
 
 # Convert Start.date to Date format and filter
 filtered_data <- toggl_data %>%
@@ -123,8 +128,8 @@ datatable(filtered_data)
 
 # calculate the number of possible work hours assuming M-F and 8 hour work days
 total_days <- as.numeric(difftime(end_date, start_date, units = "days"))
-weekdays <- seq(start_date, end_date, by = "days")
-workdays <- sum(!weekdays %in% c("Saturday", "Sunday"))
+all_days <- seq(start_date, end_date, by = "days")
+workdays <- sum(!(wday(all_days) %in% c(1, 7)))  # 1 = Sunday, 7 = Saturday
 possible_work_hours <- workdays * 8
 cat("### Possible Work Hours (M-F, 8 hours/day):", possible_work_hours, "\n")
 ```
