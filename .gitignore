@@ -57,3 +57,5 @@ rsconnect/
 
 /.quarto/
 **/*.quarto_ipynb
+*.xlsx
+*.html
